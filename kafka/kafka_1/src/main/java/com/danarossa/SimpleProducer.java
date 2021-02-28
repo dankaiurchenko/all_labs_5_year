@@ -1,12 +1,11 @@
 package com.danarossa;
 
-import java.math.BigInteger;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 public class SimpleProducer {
 
