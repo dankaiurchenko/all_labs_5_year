@@ -1,7 +1,6 @@
 package com.danarossa;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -32,9 +31,11 @@ public class SimpleConsumer {
             consumer.subscribe(Collections.singletonList("users_auth"));
             while (true) {
                 ConsumerRecords<String, Entry> records = consumer.poll(100);
-                for (ConsumerRecord<String, Entry> record : records) {
-                    System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value());
-                }
+                records.forEach((record) -> {
+                    if (record.value().getUserId().hashCode() % 10 == 0) {
+                        System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value());
+                    }
+                });
             }
         } catch (Exception e) {
             e.printStackTrace();
