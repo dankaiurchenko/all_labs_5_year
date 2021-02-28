@@ -11,12 +11,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class JsonSerializerDeserializer implements Serializer<JsonNode>, Deserializer<JsonNode> {
+public class JsonSerializerDeserializer implements Serializer<Entry>, Deserializer<Entry> {
 
     private ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public byte[] serialize(String topic, JsonNode data) {
+    public byte[] serialize(String topic, Entry data) {
 
         try {
             return mapper.writeValueAsBytes(data);
@@ -26,10 +26,10 @@ public class JsonSerializerDeserializer implements Serializer<JsonNode>, Deseria
     }
 
     @Override
-    public JsonNode deserialize(String topic, byte[] data) {
+    public Entry deserialize(String topic, byte[] data) {
 
         try {
-            return mapper.readValue(data, JsonNode.class);
+            return mapper.readValue(data, Entry.class);
         } catch (IOException e) {
             return null;
         }

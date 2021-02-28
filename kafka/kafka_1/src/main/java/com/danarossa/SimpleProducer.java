@@ -1,6 +1,8 @@
 package com.danarossa;
 
+import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -8,12 +10,15 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 
 public class SimpleProducer {
 
-    static Set<String> names = Set.of("Simon Pegg", "Nick Frost", "Edgar Wright");
 
+    // docker exec -it kafka-docker_kafka_1 bash
+    // kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 1 --topic users_auth
+    // kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic users_auth
 
     public static void main(String[] args) throws Exception {
         // name of created topic
-        String topicName = "test";
+//        String topicName = "test";
+        String topicName = "users_auth";
 
         Properties props = new Properties();
         // exposed port
@@ -27,25 +32,18 @@ public class SimpleProducer {
         props.put("key.serializer",
                 "org.apache.kafka.common.serialization.StringSerializer");
         props.put("value.serializer",
-                "org.apache.kafka.common.serialization.StringSerializer");
-        Producer<String, String> producer = new KafkaProducer<>(props);
+                "com.danarossa.JsonSerializerDeserializer");
+        Producer<String, Entry> producer = new KafkaProducer<>(props);
 
-        for (int i = 0; i < 10; i++){
-            // sends numbers from 0 to 10 to the topic
-            String randomName = getRandomName();
-            producer.send(new ProducerRecord<>(topicName,
-                    randomName, randomName + "_updated_new_photo" ));
+        while(true){
+            Entry entry = new Entry();
+            producer.send(new ProducerRecord<>(topicName, entry.getUserId().toString(), entry ));
+            TimeUnit.SECONDS.sleep(2);
+            producer.flush();
+
+            System.out.println("sent : " + entry.toString());
         }
-        System.out.println("Messages sent successfully");
-        producer.close();
     }
 
-    private static String getRandomName() {
-        int index = new Random().nextInt(names.size());
-        Iterator<String> iter = names.iterator();
-        for (int i = 0; i < index; i++) {
-            iter.next();
-        }
-        return iter.next();
-    }
+
 }
