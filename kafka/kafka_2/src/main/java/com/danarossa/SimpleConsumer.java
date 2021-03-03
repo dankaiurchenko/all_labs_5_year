@@ -5,10 +5,10 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
-import java.util.Collections;
-import java.util.Properties;
+import java.util.*;
 
 public class SimpleConsumer {
+    static int globalELemCount = -1;
 
 
     // docker exec -it kafka-docker_kafka_1 bash
@@ -24,6 +24,9 @@ public class SimpleConsumer {
         props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "com.danarossa.JsonSerializerDeserializer");
 
+        int reservoirSetLen = 10;
+        List<Entry> reservoirSet = new ArrayList<>(reservoirSetLen);
+
         KafkaConsumer<String, Entry> consumer = new KafkaConsumer<>(props);
 
         try {
@@ -35,6 +38,16 @@ public class SimpleConsumer {
                     if (record.value().getUserId().hashCode() % 10 == 0) {
                         System.out.printf("offset = %d, key = %s, value = %s%n", record.offset(), record.key(), record.value());
                     }
+                    SimpleConsumer.globalELemCount++;
+                    if (SimpleConsumer.globalELemCount < reservoirSetLen) {
+                        reservoirSet.add(record.value());
+                    } else {
+                        int random = Math.abs(new Random(SimpleConsumer.globalELemCount).nextInt());
+                        if (random < reservoirSetLen) {
+                            reservoirSet.set(random, record.value());
+                        }
+                    }
+                    System.out.printf("reservoirSet = %s%n", reservoirSet);
                 });
             }
         } catch (Exception e) {
