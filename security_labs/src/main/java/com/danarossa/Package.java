@@ -28,4 +28,9 @@ public class Package {
     public Object getFile() {
         return file;
     }
+
+    @Override
+    public String toString() {
+        return "message='" + message;
+    }
 }

@@ -23,7 +23,11 @@ public interface Client {
 
     void setState(ClientState state);
 
-    boolean receiveInformation(Package aPackage);
+    void removeState(String clientId);
 
-    boolean sendInformation(Package aPackage);
+    void transmitInfo(String receiver, String message);
+
+    boolean receiveInformation(Package aPackage, Client sender);
+
+    boolean sendInformation(Package aPackage, Client sender);
 }
