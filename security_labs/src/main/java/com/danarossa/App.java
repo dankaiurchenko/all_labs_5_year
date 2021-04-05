@@ -1,12 +1,7 @@
 package com.danarossa;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 public class App {
-    public static void main(String[] args) {
-        Collection<Client> clients = new ArrayList<Client>();
-
+    public static void main(String[] args) throws Exception {
 
         Client client1 = new StubClient("client1");
         Client client2 = new StubClient("client2");

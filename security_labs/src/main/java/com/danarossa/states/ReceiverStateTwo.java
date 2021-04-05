@@ -1,23 +1,26 @@
 package com.danarossa.states;
 
+import com.danarossa.AsymmetricCryptography;
 import com.danarossa.ConfirmationPackage;
 import com.danarossa.Package;
+import sun.security.rsa.RSAPublicKeyImpl;
 
 public class ReceiverStateTwo extends AbstractClientState {
 
-    String key;
+    byte[] key;
 
     public ReceiverStateTwo(ReceiverStateOne one) {
         super(one);
         this.key = one.openKey;
     }
 
-    public void receivePackage(Package aPackage) {
-        System.out.println();
-        System.out.println("received package + " + aPackage);
-        System.out.println();
+    public void receivePackage(Package aPackage) throws Exception {
 
-        // todo here uncypher the message
+        String s = new AsymmetricCryptography().decryptText(aPackage.getMessage(), RSAPublicKeyImpl.newKey(key));
+
+        System.out.println();
+        System.out.println("received package + " + s);
+        System.out.println();
 
         this.client.transmitInfo(receiverId, null);
     }

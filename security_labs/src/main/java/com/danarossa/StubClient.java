@@ -3,10 +3,12 @@ package com.danarossa;
 import com.danarossa.states.ClientState;
 import com.danarossa.states.ReceiverStateOne;
 import com.danarossa.states.SenderStateOne;
+import sun.security.rsa.RSAPrivateCrtKeyImpl;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,15 +25,17 @@ public class StubClient implements Client {
     private final String pathname;
     private Collection<Client> connectedClients = new HashSet<>();
 
-    private String openKey;
-    private String closedKey;
+    private byte[] openKey;
+    private byte[] closedKey;
     private String password;
+    private final AsymmetricCryptography asymmetricCryptography;
 
 
-    public StubClient(String clientId) {
+    public StubClient(String clientId) throws Exception {
 
-        openKey = clientId + "open key";
-        closedKey = clientId + "closed key";
+        asymmetricCryptography = new AsymmetricCryptography();
+        openKey = asymmetricCryptography.getPublic().getEncoded();
+        closedKey = asymmetricCryptography.getPrivate().getEncoded();
         password = "";
 
 
@@ -64,8 +68,15 @@ public class StubClient implements Client {
         return clientId;
     }
 
-    public String getOpenKey() {
+    public byte[] getOpenKey() {
+        System.out.println(new String(openKey, StandardCharsets.UTF_8).length());
+        System.out.println(openKey.length);
         return openKey;
+    }
+
+    @Override
+    public String encryptAsymmetrical(String message) throws Exception {
+        return this.asymmetricCryptography.encryptText(message, RSAPrivateCrtKeyImpl.newKey(this.closedKey));
     }
 
     public String getPassword() {
@@ -84,7 +95,7 @@ public class StubClient implements Client {
     }
 
 
-    public void transmitInfo(String receiver, String message) {
+    public void transmitInfo(String receiver, String message) throws Exception {
         if (!states.containsKey(receiver)) {
             ClientState state = new SenderStateOne(message);
             state.setClient(this);
@@ -94,7 +105,7 @@ public class StubClient implements Client {
         sendInformation(states.get(receiver).sendPackage(), this);
     }
 
-    public boolean sendInformation(Package aPackage, Client sender) {
+    public boolean sendInformation(Package aPackage, Client sender) throws Exception {
         for (Client connectedClient : this.connectedClients) {
             if (sender != connectedClient) {
                 boolean b = connectedClient.receiveInformation(aPackage, this);
@@ -106,7 +117,7 @@ public class StubClient implements Client {
         return false;
     }
 
-    public boolean receiveInformation(Package aPackage, Client sender) {
+    public boolean receiveInformation(Package aPackage, Client sender) throws Exception {
         System.out.println("in " + clientId + " package : " + aPackage);
         String senderId = aPackage.getSender();
         if (aPackage.getReceiver().equals(clientId)) {
