@@ -2,12 +2,6 @@ package com.danarossa;
 
 import com.danarossa.states.ClientState;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 
 public interface Client {
@@ -18,7 +12,7 @@ public interface Client {
 
     byte[] getOpenKey();
 
-    String encryptAsymmetrical(String message) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException, UnsupportedEncodingException, Exception;
+    String encryptAsymmetrical(String message) throws Exception;
 
     String getPassword();
 

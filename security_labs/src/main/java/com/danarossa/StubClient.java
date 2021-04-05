@@ -3,7 +3,6 @@ package com.danarossa;
 import com.danarossa.states.ClientState;
 import com.danarossa.states.ReceiverStateOne;
 import com.danarossa.states.SenderStateOne;
-import sun.security.rsa.RSAPrivateCrtKeyImpl;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -69,14 +68,12 @@ public class StubClient implements Client {
     }
 
     public byte[] getOpenKey() {
-        System.out.println(new String(openKey, StandardCharsets.UTF_8).length());
-        System.out.println(openKey.length);
         return openKey;
     }
 
     @Override
     public String encryptAsymmetrical(String message) throws Exception {
-        return this.asymmetricCryptography.encryptText(message, RSAPrivateCrtKeyImpl.newKey(this.closedKey));
+        return this.asymmetricCryptography.encryptText(message, asymmetricCryptography.getPrivate());
     }
 
     public String getPassword() {

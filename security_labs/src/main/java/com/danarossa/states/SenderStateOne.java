@@ -9,7 +9,7 @@ public class SenderStateOne extends AbstractClientState {
     }
 
     public Package sendPackage() {
-        return new Package(this.client.getClientId(), this.receiverId, new String(client.getOpenKey()), null);
+        return new Package(this.client.getClientId(), this.receiverId, client.getOpenKey(), null);
     }
 
     public void receivePackage(Package aPackage) throws Exception {

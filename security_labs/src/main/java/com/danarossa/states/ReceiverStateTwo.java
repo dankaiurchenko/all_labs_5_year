@@ -16,7 +16,7 @@ public class ReceiverStateTwo extends AbstractClientState {
 
     public void receivePackage(Package aPackage) throws Exception {
 
-        String s = new AsymmetricCryptography().decryptText(aPackage.getMessage(), RSAPublicKeyImpl.newKey(key));
+        String s = new AsymmetricCryptography().decryptText(new String(aPackage.getMessage()), RSAPublicKeyImpl.newKey(key));
 
         System.out.println();
         System.out.println("received package + " + s);

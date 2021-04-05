@@ -3,10 +3,10 @@ package com.danarossa;
 public class Package {
     final private String sender;
     final private String receiver;
-    final private String message;
+    final private byte[] message;
     final private Object file;
 
-    public Package(String sender, String receiver, String message, Object file) {
+    public Package(String sender, String receiver, byte[] message, Object file) {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
@@ -21,7 +21,7 @@ public class Package {
         return receiver;
     }
 
-    public String getMessage() {
+    public byte[] getMessage() {
         return message;
     }
 
@@ -31,6 +31,6 @@ public class Package {
 
     @Override
     public String toString() {
-        return "message='" + message;
+        return "message='" + new String(message);
     }
 }

@@ -4,8 +4,6 @@ import com.danarossa.Package;
 
 public class SenderStateTwo extends AbstractClientState {
 
-    private String fileName;
-
     public SenderStateTwo(SenderStateOne one) {
         super(one);
     }
@@ -16,10 +14,8 @@ public class SenderStateTwo extends AbstractClientState {
     }
 
     public Package sendPackage() throws Exception {
-        // todo here cypher the message using the key
-
         fileName = client.encryptAsymmetrical(fileName);
-        return new Package(this.client.getClientId(), this.receiverId, fileName, null);
+        return new Package(this.client.getClientId(), this.receiverId, fileName.getBytes(), null);
     }
 
 }
