@@ -4,9 +4,10 @@ public class Package {
     final private String sender;
     final private String receiver;
     final private byte[] message;
-    final private Object file;
+    final private boolean file;
 
-    public Package(String sender, String receiver, byte[] message, Object file) {
+
+    public Package(String sender, String receiver, byte[] message, boolean file) {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
@@ -25,12 +26,12 @@ public class Package {
         return message;
     }
 
-    public Object getFile() {
+    public boolean isFile() {
         return file;
     }
 
     @Override
     public String toString() {
-        return "message='" + new String(message);
+        return "message='" + (message == null ? null : new String(message));
     }
 }

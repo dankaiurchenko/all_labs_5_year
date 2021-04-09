@@ -24,13 +24,18 @@ public class App {
         client4.addClient(client5);
 
 
-        client5.transmitInfo("client9", "confidential information: KPI is the best university in Ukraine");
+//        client5.transmitMessage("client9", "confidential information: KPI is the best university in Ukraine");
 
         System.out.println("\n\n\n\n\n\n");
 
 
 
-        client3.transmitInfo("client7", "super confidential information: Gnome 40 is awesome!");
+//        client3.transmitMessage("client7", "super confidential information: Gnome 40 is awesome!");
+
+
+        client3.transmitFile("client7");
+
+
 
     }
 }

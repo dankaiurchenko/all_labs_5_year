@@ -1,17 +1,14 @@
 package com.danarossa;
 
+import com.danarossa.states.AbstractClientState;
 import com.danarossa.states.ClientState;
 import com.danarossa.states.ReceiverStateOne;
 import com.danarossa.states.SenderStateOne;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import java.io.*;
+import java.util.*;
 
 public class StubClient implements Client {
 
@@ -21,12 +18,11 @@ public class StubClient implements Client {
     private final File information;
 
     private final String clientId;
-    private final String pathname;
-    private Collection<Client> connectedClients = new HashSet<>();
+    private final Collection<Client> connectedClients = new HashSet<>();
 
-    private byte[] openKey;
-    private byte[] closedKey;
-    private String password;
+    private final byte[] openKey;
+    private final byte[] closedKey;
+    private final byte[] password;
     private final AsymmetricCryptography asymmetricCryptography;
 
 
@@ -35,13 +31,16 @@ public class StubClient implements Client {
         asymmetricCryptography = new AsymmetricCryptography();
         openKey = asymmetricCryptography.getPublic().getEncoded();
         closedKey = asymmetricCryptography.getPrivate().getEncoded();
-        password = "";
+        KeyGenerator generator = KeyGenerator.getInstance("AES");
+        generator.init(128);
+        SecretKey key = generator.generateKey();
+        password = key.getEncoded();
 
 
         this.clientId = clientId;
         workingFolder = new File(Client.PARENT_WORKING_DIRECTORY + "/" + clientId);
         workingFolder.mkdirs();
-        pathname = Client.PARENT_WORKING_DIRECTORY + "/" + clientId + "/" + clientId + "file.txt";
+        String pathname = Client.PARENT_WORKING_DIRECTORY + "/" + clientId + "/" + clientId + "file.txt";
         information = new File(pathname);
         try {
             String filename = "MyFile.txt";
@@ -54,7 +53,7 @@ public class StubClient implements Client {
 
     }
 
-    public void setState(ClientState state) {
+    public void setState(AbstractClientState state) {
         this.states.put(state.getReceiverId(), state);
     }
 
@@ -76,7 +75,12 @@ public class StubClient implements Client {
         return this.asymmetricCryptography.encryptText(message, asymmetricCryptography.getPrivate());
     }
 
-    public String getPassword() {
+    @Override
+    public byte[] encryptAsymmetrical(byte[] message) throws Exception {
+        return this.asymmetricCryptography.encryptByteArray(message, asymmetricCryptography.getPrivate());
+    }
+
+    public byte[] getPassword() {
         return password;
     }
 
@@ -91,15 +95,26 @@ public class StubClient implements Client {
         return connectedClients;
     }
 
+    public void transmitMessage(String receiver, String message) throws Exception {
+        this.transmitInfo(receiver, message, false);
+    }
 
-    public void transmitInfo(String receiver, String message) throws Exception {
+    public void transmitInfo(String receiver, Object message, boolean file) throws Exception {
         if (!states.containsKey(receiver)) {
-            ClientState state = new SenderStateOne(message);
+            ClientState state = new SenderStateOne(message, file);
             state.setClient(this);
             state.setReceiver(receiver);
             states.put(receiver, state);
         }
         sendInformation(states.get(receiver).sendPackage(), this);
+    }
+
+    private void transmitFile(String receiver, Object file) throws Exception {
+        this.transmitInfo(receiver, file, true);
+    }
+
+    public void transmitFile(String receiver) throws Exception {
+        this.transmitInfo(receiver, this.information, true);
     }
 
     public boolean sendInformation(Package aPackage, Client sender) throws Exception {
@@ -115,19 +130,43 @@ public class StubClient implements Client {
     }
 
     public boolean receiveInformation(Package aPackage, Client sender) throws Exception {
-        System.out.println("in " + clientId + " package : " + aPackage);
+//        System.out.println("in " + clientId + " package : " + aPackage);
         String senderId = aPackage.getSender();
         if (aPackage.getReceiver().equals(clientId)) {
             if (!states.containsKey(senderId)) {
-                ClientState state = new ReceiverStateOne();
+                ClientState state = new ReceiverStateOne(aPackage.isFile());
                 state.setClient(this);
                 state.setReceiver(senderId);
                 states.put(senderId, state);
             }
             this.states.get(senderId).receivePackage(aPackage);
             return true;
+        } else if (aPackage instanceof FilePackage) {
+            saveFileInWorkingDirectory(((FilePackage) aPackage).getFile(), new Date().toString() + ".txt");
         }
         return sendInformation(aPackage, sender);
+    }
+
+    @Override
+    public void saveFileInWorkingDirectory(byte[] bytes, String pathname) throws IOException {
+        File file = new File(this.workingFolder.getAbsolutePath() + "/" + pathname);
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file);
+            fos.write(bytes);
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found" + e);
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException ioe) {
+                System.out.println("Error while closing stream: " + ioe);
+            }
+
+        }
+        System.out.println("saving file to my working directory ");
     }
 
     public boolean checkCorrectnessOfInformation() {

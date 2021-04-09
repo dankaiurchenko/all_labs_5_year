@@ -4,18 +4,18 @@ import com.danarossa.Package;
 
 public class SenderStateOne extends AbstractClientState {
 
-    public SenderStateOne(String fileNameToSend) {
-        this.fileName = fileNameToSend;
+    public SenderStateOne(Object fileNameToSend, boolean file) {
+        super(fileNameToSend, file);
     }
 
     public Package sendPackage() {
-        return new Package(this.client.getClientId(), this.receiverId, client.getOpenKey(), null);
+        return new Package(this.client.getClientId(), this.receiverId, client.getOpenKey(), this.file);
     }
 
     public void receivePackage(Package aPackage) throws Exception {
-        this.client.setState(new SenderStateTwo(this));
+        this.client.setState(new SenderStateTwo(this, file));
         // save the key and send the approval
-        client.transmitInfo(receiverId, fileName);
+        client.transmitInfo(receiverId, message, file);
     }
 
 }

@@ -15,14 +15,6 @@ import java.security.*;
 
 public class AsymmetricCryptography {
 
-    public Object cypher(Object object, String key) {
-        return null;
-    }
-
-    public Object decipher(Object object, String key) {
-        return null;
-    }
-
     private Cipher cipher;
     private KeyPairGenerator keyGen;
     private KeyPair pair;
@@ -47,7 +39,7 @@ public class AsymmetricCryptography {
     }
 
     public String encryptText(String msg, PrivateKey key)
-            throws NoSuchAlgorithmException, NoSuchPaddingException,
+            throws
             UnsupportedEncodingException, IllegalBlockSizeException,
             BadPaddingException, InvalidKeyException {
         if (msg == null)
@@ -56,11 +48,27 @@ public class AsymmetricCryptography {
         return Base64.encodeBase64String(cipher.doFinal(msg.getBytes("UTF-8")));
     }
 
+    public byte[] encryptByteArray(byte[] msg, PrivateKey key)
+            throws IllegalBlockSizeException,
+            BadPaddingException, InvalidKeyException {
+        if (msg == null)
+            return null;
+        this.cipher.init(Cipher.ENCRYPT_MODE, key);
+        return cipher.doFinal(msg);
+    }
+
     public String decryptText(String msg, PublicKey key)
             throws InvalidKeyException, UnsupportedEncodingException,
             IllegalBlockSizeException, BadPaddingException {
         this.cipher.init(Cipher.DECRYPT_MODE, key);
         return new String(cipher.doFinal(Base64.decodeBase64(msg)), "UTF-8");
+    }
+
+    public byte[] decryptByteArray(byte[] msg, PublicKey key)
+            throws InvalidKeyException,
+            IllegalBlockSizeException, BadPaddingException {
+        this.cipher.init(Cipher.DECRYPT_MODE, key);
+        return cipher.doFinal(msg);
     }
 
     public byte[] getFileInBytes(File f) throws IOException {

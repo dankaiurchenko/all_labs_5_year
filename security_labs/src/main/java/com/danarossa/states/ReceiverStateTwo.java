@@ -8,25 +8,36 @@ import sun.security.rsa.RSAPublicKeyImpl;
 public class ReceiverStateTwo extends AbstractClientState {
 
     byte[] key;
+    byte[] password;
 
-    public ReceiverStateTwo(ReceiverStateOne one) {
-        super(one);
+    public ReceiverStateTwo(ReceiverStateOne one, boolean file) {
+        super(one, file);
         this.key = one.openKey;
+        System.out.println("ReceiverStateTwo with file = " + file);
     }
 
     public void receivePackage(Package aPackage) throws Exception {
 
-        String s = new AsymmetricCryptography().decryptText(new String(aPackage.getMessage()), RSAPublicKeyImpl.newKey(key));
+        if (isFile()) {
+            this.password = new AsymmetricCryptography().decryptByteArray(aPackage.getMessage(), RSAPublicKeyImpl.newKey(key));
+        } else {
+            String s = new AsymmetricCryptography().decryptText(new String(aPackage.getMessage()), RSAPublicKeyImpl.newKey(key));
 
-        System.out.println();
-        System.out.println("received package + " + s);
-        System.out.println();
+            System.out.println();
+            System.out.println("received package + " + s);
+            System.out.println();
+        }
 
-        this.client.transmitInfo(receiverId, null);
+        this.client.transmitInfo(receiverId, null, file);
     }
 
     public Package sendPackage() {
-        client.removeState(this.receiverId);
+        if (file) {
+            client.setState(new ReceiverStateThree(this, password));
+
+        } else {
+            client.removeState(this.receiverId);
+        }
         return new ConfirmationPackage(this.client.getClientId(), this.receiverId);
     }
 

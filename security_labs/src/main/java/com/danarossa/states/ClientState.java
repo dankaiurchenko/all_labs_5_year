@@ -3,11 +3,9 @@ package com.danarossa.states;
 import com.danarossa.Client;
 import com.danarossa.Package;
 
-import java.security.InvalidKeyException;
-
 public interface ClientState {
 
-    void receivePackage(Package aPackage) throws InvalidKeyException, Exception;
+    void receivePackage(Package aPackage) throws Exception;
 
     Package sendPackage() throws Exception;
 

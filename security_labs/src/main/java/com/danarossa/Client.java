@@ -1,7 +1,8 @@
 package com.danarossa;
 
-import com.danarossa.states.ClientState;
+import com.danarossa.states.AbstractClientState;
 
+import java.io.IOException;
 import java.util.Collection;
 
 public interface Client {
@@ -14,20 +15,28 @@ public interface Client {
 
     String encryptAsymmetrical(String message) throws Exception;
 
-    String getPassword();
+    byte[] encryptAsymmetrical(byte[] message) throws Exception;
+
+    byte[] getPassword();
 
     void addClient(Client client);
 
     Collection<Client> giveClients();
 
+    void saveFileInWorkingDirectory(byte[] bytes, String pathname) throws IOException;
+
     // for test porpoise only
     boolean checkCorrectnessOfInformation();
 
-    void setState(ClientState state);
+    void setState(AbstractClientState state);
 
     void removeState(String clientId);
 
-    void transmitInfo(String receiver, String message) throws Exception;
+    void transmitMessage(String receiver, String message) throws Exception;
+
+    void transmitInfo(String receiver, Object message, boolean file) throws Exception;
+
+    void transmitFile(String receiver) throws Exception;
 
     boolean receiveInformation(Package aPackage, Client sender) throws Exception;
 

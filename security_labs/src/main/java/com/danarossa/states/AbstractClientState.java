@@ -5,15 +5,22 @@ import com.danarossa.Client;
 public abstract class AbstractClientState implements ClientState {
     protected Client client;
     protected String receiverId;
-    protected String fileName;
+    protected Object message;
+    protected boolean file;
 
     public AbstractClientState() {
     }
 
-    public AbstractClientState(AbstractClientState one) {
+    public AbstractClientState(Object message, boolean file) {
+        this.message = message;
+        this.file = file;
+    }
+
+    public AbstractClientState(AbstractClientState one, boolean file) {
         this.client = one.client;
         this.receiverId = one.receiverId;
-        this.fileName = one.fileName;
+        this.message = one.message;
+        this.file = file;
     }
 
     public void setClient(Client client) {
@@ -24,11 +31,16 @@ public abstract class AbstractClientState implements ClientState {
         this.receiverId = receiverId;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getReceiverId() {
         return receiverId;
+    }
+
+
+    public boolean isFile() {
+        return file;
     }
 }
