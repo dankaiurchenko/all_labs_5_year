@@ -4,6 +4,8 @@ import com.danarossa.FilePackage;
 import com.danarossa.Package;
 import com.danarossa.SymmetricFileCypher;
 
+import java.io.File;
+
 public class SenderStateThree extends SenderStateTwo {
     public SenderStateThree(SenderStateTwo one) {
         super(one, true);
@@ -17,7 +19,9 @@ public class SenderStateThree extends SenderStateTwo {
     }
 
     public Package sendPackage() throws Exception {
-        return new FilePackage(this.client.getClientId(), this.receiverId, new SymmetricFileCypher().cypher(message, client.getPassword()));
+        byte[] file = new SymmetricFileCypher().cypherFile(message, client.getPassword());
+        byte[] fileName = new SymmetricFileCypher().cypher(((File) message).getName().getBytes(), client.getPassword());
+        return new FilePackage(this.client.getClientId(), this.receiverId, file, fileName);
     }
 
 

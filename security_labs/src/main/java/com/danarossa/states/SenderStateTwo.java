@@ -21,7 +21,6 @@ public class SenderStateTwo extends AbstractClientState {
     }
 
     public Package sendPackage() throws Exception {
-        System.out.println("sender state 2 is file " + file);
         final String message;
         if (file) {
             return new Package(this.client.getClientId(), this.receiverId, client.encryptAsymmetrical(client.getPassword()), this.file);

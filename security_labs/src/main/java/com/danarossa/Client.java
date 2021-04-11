@@ -36,6 +36,8 @@ public interface Client {
 
     void transmitInfo(String receiver, Object message, boolean file) throws Exception;
 
+    void transmitFile(String receiver, String file) throws Exception;
+
     void transmitFile(String receiver) throws Exception;
 
     boolean receiveInformation(Package aPackage, Client sender) throws Exception;

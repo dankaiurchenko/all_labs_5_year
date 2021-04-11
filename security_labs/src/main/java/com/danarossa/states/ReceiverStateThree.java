@@ -5,8 +5,6 @@ import com.danarossa.FilePackage;
 import com.danarossa.Package;
 import com.danarossa.SymmetricFileCypher;
 
-import java.util.Date;
-
 public class ReceiverStateThree extends ReceiverStateOne {
 
     private final byte[] password;
@@ -16,13 +14,12 @@ public class ReceiverStateThree extends ReceiverStateOne {
         this.password = password;
     }
 
-    public void receivePackage(FilePackage aPackage) throws Exception {
-        System.out.println("received a file ! finally !!!");
-        Object file = aPackage.getFile();
-        byte[] decipher = new SymmetricFileCypher().decipher(file, password);
-        this.client.saveFileInWorkingDirectory(decipher, "received from " + this.receiverId + "_" + new Date().toString() + ".txt");
-
-        // todo here save to the file
+    public void receivePackage(Package aPackage) throws Exception {
+        FilePackage filePackage = (FilePackage) aPackage;
+        byte[] file = filePackage.getFile();
+        byte[] decipherFile = new SymmetricFileCypher().decipher(file, password);
+        byte[] decipherName = new SymmetricFileCypher().decipher(filePackage.getFileName(), password);
+        this.client.saveFileInWorkingDirectory(decipherFile, new String(decipherName));
         this.client.transmitInfo(aPackage.getSender(), null, isFile());
     }
 

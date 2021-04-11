@@ -43,7 +43,6 @@ public class StubClient implements Client {
         String pathname = Client.PARENT_WORKING_DIRECTORY + "/" + clientId + "/" + clientId + "file.txt";
         information = new File(pathname);
         try {
-            String filename = "MyFile.txt";
             FileWriter fw = new FileWriter(information);
             fw.write("test file for sending from " + clientId + "\n");
             fw.close();
@@ -109,8 +108,10 @@ public class StubClient implements Client {
         sendInformation(states.get(receiver).sendPackage(), this);
     }
 
-    private void transmitFile(String receiver, Object file) throws Exception {
-        this.transmitInfo(receiver, file, true);
+    @Override
+    public void transmitFile(String receiver, String file) throws Exception {
+        File fileToTransmit = new File(this.workingFolder.getAbsolutePath() + "/" + file);
+        this.transmitInfo(receiver, fileToTransmit, true);
     }
 
     public void transmitFile(String receiver) throws Exception {
@@ -130,7 +131,7 @@ public class StubClient implements Client {
     }
 
     public boolean receiveInformation(Package aPackage, Client sender) throws Exception {
-//        System.out.println("in " + clientId + " package : " + aPackage);
+        System.out.println("in " + clientId + " package : " + aPackage);
         String senderId = aPackage.getSender();
         if (aPackage.getReceiver().equals(clientId)) {
             if (!states.containsKey(senderId)) {
@@ -142,7 +143,7 @@ public class StubClient implements Client {
             this.states.get(senderId).receivePackage(aPackage);
             return true;
         } else if (aPackage instanceof FilePackage) {
-            saveFileInWorkingDirectory(((FilePackage) aPackage).getFile(), new Date().toString() + ".txt");
+            saveFileInWorkingDirectory(((FilePackage) aPackage).getFile(), new Date().toString());
         }
         return sendInformation(aPackage, sender);
     }
