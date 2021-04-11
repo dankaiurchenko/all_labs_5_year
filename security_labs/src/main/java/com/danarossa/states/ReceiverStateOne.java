@@ -12,10 +12,6 @@ public class ReceiverStateOne extends AbstractClientState {
         this.file = file;
     }
 
-    public ReceiverStateOne(AbstractClientState one, boolean file) {
-        super(one, file);
-    }
-
     public void receivePackage(Package aPackage) throws Exception {
         this.openKey = aPackage.getMessage();
         this.client.transmitInfo(aPackage.getSender(), null, file);

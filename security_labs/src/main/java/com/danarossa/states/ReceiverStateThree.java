@@ -5,7 +5,7 @@ import com.danarossa.FilePackage;
 import com.danarossa.Package;
 import com.danarossa.SymmetricFileCypher;
 
-public class ReceiverStateThree extends ReceiverStateOne {
+public class ReceiverStateThree extends AbstractClientState {
 
     private final byte[] password;
 

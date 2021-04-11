@@ -13,7 +13,6 @@ public class ReceiverStateTwo extends AbstractClientState {
     public ReceiverStateTwo(ReceiverStateOne one, boolean file) {
         super(one, file);
         this.key = one.openKey;
-        System.out.println("ReceiverStateTwo with file = " + file);
     }
 
     public void receivePackage(Package aPackage) throws Exception {

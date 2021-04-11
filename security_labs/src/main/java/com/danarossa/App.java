@@ -23,16 +23,19 @@ public class App {
         client3.addClient(client4);
         client4.addClient(client5);
 
-//        client5.transmitMessage("client9", "confidential information: KPI is the best university in Ukraine");
+        client5.transmitMessage("client9", "confidential information: KPI is the best university in Ukraine");
 
         System.out.println("\n\n\n\n\n\n");
 
-//        client3.transmitMessage("client7", "super confidential information: Gnome 40 is awesome!");
+        client3.transmitMessage("client7", "super confidential information: Gnome 40 is awesome!");
+
+        System.out.println("\n\n\n\n\n\n");
 
         client3.transmitFile("client7");
 
-        client1.transmitFile("client7", "lab1.from_client_1.docx");
+        System.out.println("\n\n\n\n\n\n");
 
+        client1.transmitFile("client7", "lab1.from_client_1.docx");
 
 
     }
