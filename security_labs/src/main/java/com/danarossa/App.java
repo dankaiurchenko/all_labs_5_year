@@ -35,7 +35,7 @@ public class App {
 
         System.out.println("\n\n\n\n\n\n");
 
-        client1.transmitFile("client7", "lab1.from_client_1.docx");
+//        client1.transmitFile("client7", "lab1.from_client_1.docx");
 
 
     }

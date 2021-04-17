@@ -31,6 +31,7 @@ public class StubClient implements Client {
         asymmetricCryptography = new AsymmetricCryptography();
         openKey = asymmetricCryptography.getPublic().getEncoded();
         closedKey = asymmetricCryptography.getPrivate().getEncoded();
+
         KeyGenerator generator = KeyGenerator.getInstance("AES");
         generator.init(128);
         SecretKey key = generator.generateKey();
