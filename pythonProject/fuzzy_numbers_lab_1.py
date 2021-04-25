@@ -38,49 +38,46 @@ print max(fuzzy_B.values())
 print fuzzy_A.keys()[fuzzy_A.values().index(max(fuzzy_A.values()))]
 print fuzzy_B.keys()[fuzzy_B.values().index(max(fuzzy_B.values()))]
 
+
 # носій
-fuzzy_A_Bearer = []
-fuzzy_B_Bearer = []
-for key, value in fuzzy_A.items():
-    if value > 0:
-        fuzzy_A_Bearer.append(key)
+def get_bearer(values):
+    bearer = []
+    for key, value in values.items():
+        if value > 0:
+            bearer.append(key)
+    return bearer
 
-for key, value in fuzzy_B.items():
-    if value > 0:
-        fuzzy_B_Bearer.append(key)
 
-print fuzzy_A_Bearer
-print fuzzy_B_Bearer
+print get_bearer(fuzzy_A)
+print get_bearer(fuzzy_B)
+
 
 # ядро
-fuzzy_A_Core = []
-fuzzy_B_Core = []
-for key, value in fuzzy_A.items():
-    if value == 1:
-        fuzzy_A_Core.append(key)
+def get_core(values):
+    core = []
+    for key, value in values.items():
+        if value == 1:
+            core.append(key)
+    return core
 
-for key, value in fuzzy_B.items():
-    if value == 1:
-        fuzzy_B_Core.append(key)
 
-print fuzzy_A_Core
-print fuzzy_B_Core
+print get_core(fuzzy_A)
+print get_core(fuzzy_B)
+
 
 # множина α-рівня
-a_l = 0.7
-fuzzy_A_a = []
-fuzzy_B_a = []
+def get_a_level(values):
+    a_l = 0.7
+    a_level = []
+    for key, value in values.items():
+        if value >= a_l:
+            a_level.append(key)
+    return a_level
 
-for key, value in fuzzy_A.items():
-    if value >= a_l:
-        fuzzy_A_a.append(key)
 
-for key, value in fuzzy_B.items():
-    if value >= a_l:
-        fuzzy_B_a.append(key)
+print get_a_level(fuzzy_A)
+print get_a_level(fuzzy_B)
 
-print fuzzy_A_a
-print fuzzy_B_a
 
 # T = 14 % 3 = 2    обмежена
 # операції об’єднання, перетину
@@ -99,8 +96,6 @@ for i in x:
 
 fuzzy_union = collections.OrderedDict(sorted(fuzzy_union.items()))
 fuzzy_intersection = collections.OrderedDict(sorted(fuzzy_intersection.items()))
-
-print fuzzy_union
 
 figure, axis = plt.subplots(1, 2)
 axis[0].plot(fuzzy_union.keys(), fuzzy_union.values(), marker='*')
@@ -121,66 +116,46 @@ for key, value in fuzzy_B.items():
 
 figure, axis = plt.subplots(1, 2)
 axis[0].plot(fuzzy_A_D.keys(), fuzzy_A_D.values(), marker='*')
-axis[0].set_title("A")
+axis[0].set_title("Complement A")
 axis[1].plot(fuzzy_B_D.keys(), fuzzy_B_D.values(), marker='*')
-axis[1].set_title("B")
+axis[1].set_title("Complement B")
 plt.show()
+
 
 # операції додавання, віднімання, множення та ділення над нечіткими числами
 # http://moodle.ipo.kpi.ua/moodle/mod/resource/view.php?id=38981
 
-# addition
-A_B_addition = {}
-for a_key, a_value in fuzzy_A.items():
-    for b_key, b_value in fuzzy_B.items():
-        z = a_key + b_key
-        z_m = min(a_value, b_value)
-        A_B_addition[z] = max(A_B_addition.get(z, 0.0), z_m)
 
-A_B_addition = collections.OrderedDict(sorted(A_B_addition.items()))
+def perform_arithmetical_operation(a, b, c):
+    a_b_result = {}
+    for a_key, a_value in a.items():
+        for b_key, b_value in b.items():
+            z = c(a_key, b_key)
+            z_m = min(a_value, b_value)
+            a_b_result[z] = max(a_b_result.get(z, 0.0), z_m)
+    return collections.OrderedDict(sorted(a_b_result.items()))
+
 
 figure, axis = plt.subplots(2, 2)
 
+# addition
+A_B_addition = perform_arithmetical_operation(fuzzy_A, fuzzy_B, (lambda a, b: a + b))
 axis[0, 0].plot(A_B_addition.keys(), A_B_addition.values(), marker='*')
 axis[0, 0].set_title("addition")
 
 # subtraction
-A_B_subtraction = {}
-for a_key, a_value in fuzzy_A.items():
-    for b_key, b_value in fuzzy_B.items():
-        z = a_key - b_key
-        z_m = min(a_value, b_value)
-        A_B_subtraction[z] = max(A_B_subtraction.get(z, 0.0), z_m)
-
-A_B_subtraction = collections.OrderedDict(sorted(A_B_subtraction.items()))
+A_B_subtraction = perform_arithmetical_operation(fuzzy_A, fuzzy_B, (lambda a, b: a - b))
 axis[0, 1].plot(A_B_subtraction.keys(), A_B_subtraction.values(), marker='*')
 axis[0, 1].set_title("subtraction")
 
 # multiplication
-A_B_multiplication = {}
-for a_key, a_value in fuzzy_A.items():
-    for b_key, b_value in fuzzy_B.items():
-        z = a_key * b_key
-        z_m = min(a_value, b_value)
-        A_B_multiplication[z] = max(A_B_multiplication.get(z, 0.0), z_m)
-
-A_B_multiplication = collections.OrderedDict(sorted(A_B_multiplication.items()))
-
+A_B_multiplication = perform_arithmetical_operation(fuzzy_A, fuzzy_B, (lambda a, b: a * b))
 axis[1, 0].plot(A_B_multiplication.keys(), A_B_multiplication.values(), marker='*')
 axis[1, 0].set_title("multiplication")
 
 # division
-A_B_division = {}
-for a_key, a_value in fuzzy_A.items():
-    for b_key, b_value in fuzzy_B.items():
-        if b_key == 0:
-            continue
-        z = a_key / b_key
-        z_m = min(a_value, b_value)
-        A_B_division[z] = max(A_B_division.get(z, 0.0), z_m)
-
-A_B_division = collections.OrderedDict(sorted(A_B_division.items()))
-
+A_B_division = perform_arithmetical_operation(fuzzy_A, fuzzy_B, (lambda a, b: a / b if b != 0 else 0))
 axis[1, 1].plot(A_B_division.keys(), A_B_division.values(), marker='*')
 axis[1, 1].set_title("division")
+
 plt.show()
