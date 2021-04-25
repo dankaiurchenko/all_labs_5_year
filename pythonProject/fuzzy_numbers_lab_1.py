@@ -1,5 +1,6 @@
 # coding=utf-8
 import matplotlib.pyplot as plt
+import collections
 
 # old ticket number is tv-6149
 
@@ -11,7 +12,6 @@ import matplotlib.pyplot as plt
 # B = {<0.5 * i , i / 28>} for i = [0, 14]
 
 # compute the A and B for all i
-
 
 fuzzy_A_X = []
 fuzzy_A_M = []
@@ -119,11 +119,53 @@ plt.show()
 
 # операції додавання, віднімання, множення та ділення над нечіткими числами
 # addition
+A_B_addition = {}
+for i in range(15):
+    z = fuzzy_A_X[i] + fuzzy_B_X[i]
+    z_m = min(fuzzy_A_M[i], fuzzy_B_M[i])
+    A_B_addition[z] = max(A_B_addition.get(z, 0.0), z_m)
 
+A_B_addition = collections.OrderedDict(sorted(A_B_addition.items()))
+
+figure, axis = plt.subplots(2, 2)
+
+axis[0, 0].plot(A_B_addition.keys(), A_B_addition.values(), marker='*')
+axis[0, 0].set_title("addition")
 
 # subtraction
+A_B_subtraction = {}
+for i in range(15):
+    z = fuzzy_A_X[i] - fuzzy_B_X[i]
+    z_m = min(fuzzy_A_M[i], fuzzy_B_M[i])
+    A_B_subtraction[z] = max(A_B_subtraction.get(z, 0.0), z_m)
+
+A_B_subtraction = collections.OrderedDict(sorted(A_B_subtraction.items()))
+axis[0, 1].plot(A_B_subtraction.keys(), A_B_subtraction.values(), marker='*')
+axis[0, 1].set_title("subtraction")
 
 # multiplication
+A_B_multiplication = {}
+for i in range(15):
+    z = fuzzy_A_X[i] * fuzzy_B_X[i]
+    z_m = min(fuzzy_A_M[i], fuzzy_B_M[i])
+    A_B_multiplication[z] = max(A_B_multiplication.get(z, 0.0), z_m)
 
+A_B_multiplication = collections.OrderedDict(sorted(A_B_multiplication.items()))
+
+axis[1, 0].plot(A_B_multiplication.keys(), A_B_multiplication.values(), marker='*')
+axis[1, 0].set_title("multiplication")
 
 # division
+A_B_division = {}
+for i in range(15):
+    if fuzzy_B_X[i] == 0:
+        continue
+    z = fuzzy_A_X[i] / fuzzy_B_X[i]
+    z_m = min(fuzzy_A_M[i], fuzzy_B_M[i])
+    A_B_division[z] = max(A_B_division.get(z, 0.0), z_m)
+
+A_B_division = collections.OrderedDict(sorted(A_B_division.items()))
+
+axis[1, 1].plot(A_B_division.keys(), A_B_division.values(), marker='*')
+axis[1, 1].set_title("division")
+plt.show()
