@@ -3,7 +3,6 @@ package com.danarossa;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 
-import java.io.FileReader;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -23,7 +22,10 @@ public class Topics {
             properties.load(Topics.class.getClassLoader().getResourceAsStream("kafka.properties"));
 
             AdminClient adminClient = AdminClient.create(properties);
-            List<NewTopic> newTopics = topicsNames.stream().map(topicName -> new NewTopic(topicName, 1, (short) 1)).collect(Collectors.toList());
+            List<NewTopic> newTopics = topicsNames
+                    .stream()
+                    .map(topicName -> new NewTopic(topicName, 1, (short) 1))
+                    .collect(Collectors.toList());
 
             adminClient.createTopics(newTopics);
             adminClient.close();
