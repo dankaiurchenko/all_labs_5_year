@@ -12,7 +12,7 @@ import java.util.Properties;
 
 public class SimpleConsumer {
     //    private static final double c = Math.pow(10, -6);
-    private static final double c = 2.0 / 40.0;
+    private static final double c = 0.01;
     private static final double d = 0.5;
 
     public static void main(String[] args) throws Exception {
@@ -33,9 +33,12 @@ public class SimpleConsumer {
                     int newValue = Integer.parseInt(record.value());
 
                     Double oldResult = sums.getOrDefault(topicName, 0.0);
-                    double newSum = oldResult * (1 - c) + newValue * c;
-                    sums.put(topicName, newSum);
-
+                    double newSum = oldResult * c + newValue;
+                    if (newSum > 0.5) {
+                        sums.put(topicName, newSum);
+                    } else {
+                        sums.remove(topicName);
+                    }
                     if (sums.size() > 1) {
                         Map.Entry<String, Double> maxEntry = Collections.max(sums.entrySet(), Map.Entry.comparingByValue());
                         System.out.format("Maximum value is from topic %s is %f", maxEntry.getKey(), maxEntry.getValue());
