@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 
 
 public class Topics {
-    private static final String topicsName = "re[eating_numbers";
+    private static final String topicsName = "repeating_numbers";
 
     public static String getTopicsName() {
         return topicsName;

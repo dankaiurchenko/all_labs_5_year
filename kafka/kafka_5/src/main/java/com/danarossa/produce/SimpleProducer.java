@@ -6,13 +6,11 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 public class SimpleProducer {
-
-    // docker exec -it kafka-docker_kafka_1 bash
-    // kafka-topics.sh --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions 1 --topic users_auth
-    // kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic users_auth
 
     public static void main(String[] args) throws Exception {
         Properties props = new Properties();
@@ -21,11 +19,11 @@ public class SimpleProducer {
         Producer<String, String> producer = new KafkaProducer<>(props);
 
         while (true) {
-            int random = (int) (Math.random() * 1000);
+            int random = (int) (Math.random() * 100);
             producer.send(new ProducerRecord<>(Topics.getTopicsName(), Entry.getRandomBigInteger().toString(), String.valueOf(random)));
             producer.flush();
+            System.out.println("flushed " + random);
         }
     }
-
 
 }
