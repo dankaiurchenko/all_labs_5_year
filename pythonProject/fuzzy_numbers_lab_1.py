@@ -3,11 +3,8 @@ import matplotlib.pyplot as plt
 import collections
 
 # old ticket number is tv-6149
-
-
 # V = 9 + 4 + 1 = 14
 
-# A = {x, m(x)}, where x = f(i) and i =  [0, 14]
 # A = {<i, i / 14 >}, for i = [0, 14]
 # B = {<0.5 * i , i / 28>} for i = [0, 14]
 
@@ -29,7 +26,7 @@ axis[1].plot(fuzzy_B.keys(), fuzzy_B.values(), marker='*')
 axis[1].set_title("B")
 plt.show()
 
-# compute  висоту, моду, носія, ядро, множину α-рівня
+# обрахувати висоту, моду, носія, ядро, множину α-рівня
 # висота
 print max(fuzzy_A.values())
 print max(fuzzy_B.values())
