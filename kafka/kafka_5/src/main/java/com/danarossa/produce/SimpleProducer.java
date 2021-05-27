@@ -20,7 +20,7 @@ public class SimpleProducer {
 
         while (true) {
             int random = (int) (Math.random() * 100);
-            producer.send(new ProducerRecord<>(Topics.getTopicsName(), Entry.getRandomBigInteger().toString(), String.valueOf(random)));
+            producer.send(new ProducerRecord<>(Topics.getTopic1Name(), Entry.getRandomBigInteger().toString(), String.valueOf(random)));
             producer.flush();
             System.out.println("flushed " + random);
         }
