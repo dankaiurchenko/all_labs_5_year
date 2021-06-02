@@ -1,0 +1,54 @@
+docker stop postgres1 postgres2
+docker rm postgres1 postgres2
+
+######## postgres1 
+docker run -p 54320:5432 --name postgres1 -e POSTGRES_PASSWORD=postpswd -d postgres
+docker exec -it postgres1 bash
+
+psql -U postgres
+
+\l
+\c postgres
+\d
+CREATE TABLE prices(id int primary key not null, book_id int not null, price float);
+
+insert into prices values (0, 0, 10), (1, 2, 9.99), (2, 3, 5.45), (3, 6, 1.99);
+select * from prices;
+
+
+######## postgres2 
+docker run -p 54321:5432 --name postgres2 -e POSTGRES_PASSWORD=postpswd -d postgres
+docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' postgres1
+docker exec -it pc2 bash
+
+psql -U postgres
+
+\l
+\c postgres
+\d
+
+CREATE TABLE prices(id int primary key not null, book_id int not null, price float);
+insert into prices values (10, 10, 10), (11, 12, 9.99), (12, 13, 5.45), (13, 16, 1.99);
+select * from prices;
+
+CREATE FOREIGN DATA WRAPPER dbrnd VALIDATOR postgresql_fdw_validator;
+
+CREATE SERVER demodbrnd FOREIGN DATA WRAPPER dbrnd OPTIONS (hostaddr '172.20.0.3', port '5432', dbname 'postgres');
+
+CREATE USER MAPPING FOR postgres SERVER demodbrnd OPTIONS (user 'postgres', password 'postpswd');
+
+CREATE EXTENSION dblink;
+SELECT dblink_connect('demodbrnd');--OK
+
+SELECT * FROM public.dblink ('demodbrnd','select * from public.prices') AS DATA(id int, book_id int, price float);
+
+SELECT 'db2' f, * FROM public.dblink ('demodbrnd','select * from public.prices') AS DATA(id int, book_id int, price float) union all select 'db1' f, * from public.prices;
+
+CREATE VIEW prices_view AS
+SELECT 'db2' f, * FROM public.dblink ('demodbrnd','select * from public.prices') AS DATA(id int, book_id int, price float) union all select 'db1' f, * from public.prices;
+
+select table_name from INFORMATION_SCHEMA.views where table_name like 'prices%';
+
+select view_definition from INFORMATION_SCHEMA.views where table_name like '%prices%';
+
+select table_name,view_definition from INFORMATION_SCHEMA.views where table_name like 'prices%';

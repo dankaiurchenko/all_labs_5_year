@@ -1,0 +1,40 @@
+version: '3.5'
+
+services:
+  postgres1:
+    container_name: pc1
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postpswd
+      PGDATA: /data/postgres
+    volumes:
+       - postgres1:/data/postgres
+    ports:
+      - "5430:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+  postgres2:
+    container_name: pc2
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postpswd
+      PGDATA: /data/postgres
+    volumes:
+       - postgres2:/data/postgres
+    ports:
+      - "5431:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+    postgres1:
+    postgres2:
